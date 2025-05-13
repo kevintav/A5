@@ -30,8 +30,8 @@ public class MainPanel extends JPanel {
         Border margin = BorderFactory.createEmptyBorder(12, 12, 12, 12);
         setBorder(new CompoundBorder(border, margin));
 
-        //createInfoTextAreaAtEast();  //output at right
-        //Buttons at south
+        // createInfoTextAreaAtEast();  // output at right
+        // Buttons at south
         pnlSouth = new SouthPanel(controller);
         add(pnlSouth, layout.SOUTH);
 

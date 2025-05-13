@@ -51,17 +51,17 @@ public class Controller {
     }
 
 
-    //To clear the lest, stringInfo should be "".
+    //To clear the list, stringInfo should be "".
     public void updateView(String stringInfo) {
         SwingUtilities.invokeLater(() -> view.updateEventLog(stringInfo));
     }
 
-    //Update the status litbox with an array of strings.
+    //Update the status listbox with an array of strings.
     public void updateStatusList(String[] itemsToAdd, boolean clearList) {
         SwingUtilities.invokeLater(() -> view.updateStatusItemsList(itemsToAdd, clearList));
     }
 
-    //Update the status litbox with a single line of text.
+    //Update the status listbox with a single line of text.
     public void updateStatusList(String text) {
         SwingUtilities.invokeLater(() -> view.updateStatusItemsList(text));
     }

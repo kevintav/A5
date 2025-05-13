@@ -12,7 +12,7 @@ import java.awt.*;
 //Class extending JPanel and hosting a JList for display a list of strings.
 //The list serves as log of events.  The list is updated through the controller.
 public class CenterPanel extends JPanel {
-    private JList<String> list;//data has type Object[]
+    private JList<String> list; //data has type Object[]
     DefaultListModel<String> listModel = new DefaultListModel<>(); //for adding single elements
     private Controller controller;
     private int width, height;
@@ -28,7 +28,7 @@ public class CenterPanel extends JPanel {
         Border margin = BorderFactory.createEmptyBorder(6, 6, 6, 6);
         setBorder(new CompoundBorder(border, margin));
 
-        list = new JList<>(listModel);  //data of singlel elements
+        list = new JList<>(listModel);  //data of single elements
 
         list.setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
 
@@ -79,6 +79,4 @@ public class CenterPanel extends JPanel {
             }
         });
     }
-
-
 }
