@@ -23,7 +23,7 @@ public class Controller {
         updateView("The Stop button is disabled as it is not used.");
 
         updateStatusList(new String[]{"This listbox serves as a notfication log.", "It is modelled in EastPanel"}, true);
-        updateStatusList("Line 3"); //overleaded method called
+        updateStatusList("Line 3"); // overloaded method called
     }
 
     /*
