@@ -39,10 +39,9 @@ public class MainFrame extends JFrame {
         setVisible(true);
     }
 
-    public void updateCourseSummary(String[] lines) {
+    public void updateCourseInfo(String[] lines) {
         panel.getPnlCenter().setCourseInfo(lines);
     }
-
 
     public void toggleStartStopButtons(boolean startEnabled) {
         panel.getPnlSouth().setStartButtonEnabled(startEnabled);

@@ -96,16 +96,12 @@ public class Controller {
     }
 
     private void updateCourseListInView() {
-        String[] info = regService.getCourses().values().stream().map(course ->
-                String.format("%s: Enrolled=%d, Waitlist=%d",
-                        course.getName(),
-                        course.getEnrolledStudents().size(),
-                        course.getWaitingList().size())
+        String[] lines = regService.getCourses().values().stream().map(course ->
+                String.format("%s (%d/%d)", course.getName(), course.getEnrolledStudents().size(), course.getCapacity())
         ).toArray(String[]::new);
 
-        SwingUtilities.invokeLater(() -> view.updateEventLog(info));
+        SwingUtilities.invokeLater(() -> view.updateCourseInfo(lines));
     }
-
 
     public void updateView(String stringInfo) {
         SwingUtilities.invokeLater(() -> view.updateEventLog(stringInfo));
