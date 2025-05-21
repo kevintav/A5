@@ -55,7 +55,10 @@ public class CenterPanel extends JPanel {
     //This is methods updates the entire content of the list, clearing the items before
     //updating.
     public void updateProductList(String[] stringList) {
-        list.setListData(stringList);
+        listModel.clear();
+        for (String item : stringList) {
+            listModel.addElement(item);
+        }
     }
 
     //This method appends a new string at the end of the list
@@ -64,6 +67,13 @@ public class CenterPanel extends JPanel {
             listModel.removeAllElements();
         else
             listModel.addElement(stringInfo);
+    }
+
+    public void setCourseInfo(String[] courseInfoLines) {
+        listModel.clear();
+        for (String line : courseInfoLines) {
+            listModel.addElement(line);
+        }
     }
 
     //This method is automatically executed when an item on the list is selected.

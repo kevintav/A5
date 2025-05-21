@@ -39,6 +39,16 @@ public class MainFrame extends JFrame {
         setVisible(true);
     }
 
+    public void updateCourseSummary(String[] lines) {
+        panel.getPnlCenter().setCourseInfo(lines);
+    }
+
+
+    public void toggleStartStopButtons(boolean startEnabled) {
+        panel.getPnlSouth().setStartButtonEnabled(startEnabled);
+        panel.getPnlSouth().setStopButtonEnabled(!startEnabled);
+    }
+
     public void updateStatusItemsList(String[] stringList, boolean clearList) {panel.getPnlEast().updateStatusList(stringList, clearList);}
     public void updateStatusItemsList(String text) {
         panel.getPnlEast().updateStatusList(text);

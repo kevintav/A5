@@ -1,74 +1,121 @@
 package controller;
 
+import model.Course;
+import model.RegistrationService;
+import model.Student;
 import view.*;
 
 import javax.swing.*;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public class Controller {
-    MainFrame view;
+    private final RegistrationService regService = new RegistrationService();
+    private final MainFrame view;
+    private final List<Student> allStudents = Collections.synchronizedList(new ArrayList<>());
+    private volatile boolean simulationRunning = false;
+    private int studentCounter = 1;
 
     public Controller() {
-        view = new MainFrame(this);  //view
-        DisplayInfo();
-    }
-    //You can delete this method
-    private void DisplayInfo()
-    {
-        updateView("Here comes a list of courses.");
-        updateView("The listbox is modelled in the view- CenterPanel.");
-        updateView(" ");
-
-        updateView("The Start button is activated in the, view > SouthPanel");
-        updateView("It calls a controller method where you can start your simulation." );
-        updateView("The Stop button is disabled as it is not used.");
-
-        updateStatusList(new String[]{"This listbox serves as a notfication log.", "It is modelled in EastPanel"}, true);
-        updateStatusList("Line 3"); // overloaded method called
+        view = new MainFrame(this);
+        regService.setLogger(this::updateStatusList);
+        displayInfo();
     }
 
-    /*
-      The view triggers this method when one of the buttons on view are
-      clicked.  Handle each event
-     */
+    private void displayInfo() {
+        updateCourseListInView();
+    }
+
+
     public void buttonPressed(ButtonType button) {
-        int index = 0;
         switch (button) {
             case Start:
-                updateView("");  //clear contents
-                updateView("Courses available for registration. . .");
-                updateStatusList(new String[]{"Starting simulation . . ."}, true);
-                updateStatusList("To be updated as simulation proceeds!");
-                //call your method to start simulation
-                //use the listboxes to log notifications
+                if (!simulationRunning) {
+                    simulationRunning = true;
+                    view.toggleStartStopButtons(false);
+                    setupCourses();
+                    runSimulation();
+                    updateStatusList("Simulation started.");
+                }
                 break;
 
             case Stop:
-                //not implemented
-                String [] testStrings = {"Line 1", "Line 2", "Line 3"};
-                updateStatusList(testStrings, true);
+                simulationRunning = false;
+                view.toggleStartStopButtons(true);
+                updateStatusList("Simulation stopped.");
                 break;
         }
     }
 
+    private void setupCourses() {
+        regService.clear();
+        regService.addCourse(new Course(0, "System", 10));
+        regService.addCourse(new Course(1, "Nature", 10));
+        regService.addCourse(new Course(2, "Engineer", 10));
+    }
 
-    //To clear the list, stringInfo should be "".
+    private void runSimulation() {
+        List<Course> courses = new ArrayList<>(regService.getCourses().values());
+        Random random = new Random();
+
+        // Registration loop
+        CompletableFuture.runAsync(() -> {
+            while (simulationRunning && studentCounter <= 100) {
+                try {
+                    Thread.sleep(random.nextInt(150) + 100);
+                    int id = studentCounter++;
+                    Student student = new Student(id, "Student " + id);
+                    allStudents.add(student);
+                    Course course = courses.get(random.nextInt(courses.size()));
+                    CompletableFuture.runAsync(() -> regService.registerStudent(student, course.getId()));
+                    updateCourseListInView();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        });
+
+        // Dropout loop
+        CompletableFuture.runAsync(() -> {
+            while (simulationRunning) {
+                try {
+                    Thread.sleep(random.nextInt(3000) + 2000);
+                    for (Course course : courses) {
+                        List<Student> enrolled = course.getEnrolledStudents();
+                        if (!enrolled.isEmpty()) {
+                            Student student = enrolled.get(random.nextInt(enrolled.size()));
+                            CompletableFuture.runAsync(() -> regService.dropStudent(student, course.getId()));
+                            updateCourseListInView();
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        });
+    }
+
+    private void updateCourseListInView() {
+        String[] info = regService.getCourses().values().stream().map(course ->
+                String.format("%s: Enrolled=%d, Waitlist=%d",
+                        course.getName(),
+                        course.getEnrolledStudents().size(),
+                        course.getWaitingList().size())
+        ).toArray(String[]::new);
+
+        SwingUtilities.invokeLater(() -> view.updateEventLog(info));
+    }
+
+
     public void updateView(String stringInfo) {
         SwingUtilities.invokeLater(() -> view.updateEventLog(stringInfo));
     }
 
-    //Update the status listbox with an array of strings.
     public void updateStatusList(String[] itemsToAdd, boolean clearList) {
         SwingUtilities.invokeLater(() -> view.updateStatusItemsList(itemsToAdd, clearList));
     }
 
-    //Update the status listbox with a single line of text.
     public void updateStatusList(String text) {
         SwingUtilities.invokeLater(() -> view.updateStatusItemsList(text));
     }
-
-
-
-
-
 }
-

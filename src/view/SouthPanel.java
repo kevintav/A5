@@ -50,6 +50,14 @@ public class SouthPanel extends JPanel {
         btnStop.addActionListener(listener);
     }
 
+    public void setStartButtonEnabled(boolean enabled) {
+        btnOK.setEnabled(enabled);
+    }
+
+    public void setStopButtonEnabled(boolean enabled) {
+        btnStop.setEnabled(enabled);
+    }
+
     // Listener method connected to the buttons.
     // This method serves as the event-handler method for the
     // click event of the buttons. It is a call-back method
