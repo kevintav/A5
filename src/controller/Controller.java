@@ -26,7 +26,6 @@ public class Controller {
         updateCourseListInView();
     }
 
-
     public void buttonPressed(ButtonType button) {
         switch (button) {
             case Start:
