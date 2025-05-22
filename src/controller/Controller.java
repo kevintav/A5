@@ -104,11 +104,22 @@ public class Controller {
 
     private void updateCourseListInView() {
         Collection<Course> courses = regService.getCourses().values();
-        String[] lines = new String[courses.size()];
+        String[] lines = new String[courses.size() + 1];
         int i = 0;
+        int totalDropouts = 0;
+
         for (Course course : courses) {
-            lines[i++] = course.getName() + " (" + course.getEnrolledStudents().size() + "/" + course.getCapacity() + ")";
+            int enrolled = course.getEnrolledStudents().size();
+            int capacity = course.getCapacity();
+            int waiting = course.getWaitingList().size();
+            int dropped = course.getDropouts();
+            totalDropouts += dropped;
+
+            lines[i++] = String.format("%s (%d/%d) | Waiting: %d | Dropped: %d", course.getName(), enrolled, capacity, waiting, dropped
+            );
         }
+
+        lines[i] = "Total dropouts: " + totalDropouts;
 
         SwingUtilities.invokeLater(() -> view.updateCourseInfo(lines));
     }

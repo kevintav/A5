@@ -11,6 +11,7 @@ public class Course {
     private final int capacity;
     private final List<Student> enrolledStudents;
     private final Queue<Student> waitingList;
+    private int dropouts = 0;
 
     public Course(int id, String name, int capacity) {
         this.id = id;
@@ -38,5 +39,13 @@ public class Course {
 
     public Queue<Student> getWaitingList() {
         return waitingList;
+    }
+
+    public void incrementDropouts() {
+        dropouts++;
+    }
+
+    public int getDropouts() {
+        return dropouts;
     }
 }

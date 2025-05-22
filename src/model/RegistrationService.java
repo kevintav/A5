@@ -69,6 +69,7 @@ public class RegistrationService {
                 if (next != null) {
                     course.getEnrolledStudents().add(next);
                     next.getEnrolledCourses().add(course);
+                    course.incrementDropouts();
                     logger.accept(next.getName() + " promoted from waitlist to " + course.getName());
                 }
             }
