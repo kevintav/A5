@@ -13,7 +13,7 @@ public class Controller {
     private final RegistrationService regService = new RegistrationService();
     private final MainFrame view;
     private final List<Student> allStudents = Collections.synchronizedList(new ArrayList<>());
-    private volatile boolean simulationRunning = false;
+    private volatile boolean isRunning = false;
     private int studentCounter = 1;
 
     public Controller() {
@@ -30,9 +30,17 @@ public class Controller {
     public void buttonPressed(ButtonType button) {
         switch (button) {
             case Start:
-                if (!simulationRunning) {
-                    simulationRunning = true;
+                if (!isRunning) {
+                    isRunning = true;
                     view.toggleStartStopButtons(false);
+
+                    regService.clear();
+                    allStudents.clear();
+                    studentCounter = 1;
+
+                    view.updateCourseInfo(new String[0]);
+                    view.updateStatusItemsList(new String[0], true);
+
                     setupCourses();
                     runSimulation();
                     updateStatusList("Simulation started.");
@@ -40,7 +48,7 @@ public class Controller {
                 break;
 
             case Stop:
-                simulationRunning = false;
+                isRunning = false;
                 view.toggleStartStopButtons(true);
                 updateStatusList("Simulation stopped.");
                 break;
@@ -49,9 +57,9 @@ public class Controller {
 
     private void setupCourses() {
         regService.clear();
-        regService.addCourse(new Course(0, "System", 10));
-        regService.addCourse(new Course(1, "Nature", 10));
-        regService.addCourse(new Course(2, "Engineer", 10));
+        regService.addCourse(new Course(0, "System", 30));
+        regService.addCourse(new Course(1, "Nature", 25));
+        regService.addCourse(new Course(2, "Engineer", 20));
     }
 
     private void runSimulation() {
@@ -60,7 +68,7 @@ public class Controller {
 
         // Registration loop
         CompletableFuture.runAsync(() -> {
-            while (simulationRunning && studentCounter <= 100) {
+            while (isRunning && studentCounter <= 100) {
                 try {
                     Thread.sleep(random.nextInt(150) + 100);
                     int id = studentCounter++;
@@ -77,7 +85,7 @@ public class Controller {
 
         // Dropout loop
         CompletableFuture.runAsync(() -> {
-            while (simulationRunning) {
+            while (isRunning) {
                 try {
                     Thread.sleep(random.nextInt(3000) + 2000);
                     for (Course course : courses) {
@@ -96,19 +104,14 @@ public class Controller {
     }
 
     private void updateCourseListInView() {
-        String[] lines = regService.getCourses().values().stream().map(course ->
-                String.format("%s (%d/%d)", course.getName(), course.getEnrolledStudents().size(), course.getCapacity())
-        ).toArray(String[]::new);
+        Collection<Course> courses = regService.getCourses().values();
+        String[] lines = new String[courses.size()];
+        int i = 0;
+        for (Course course : courses) {
+            lines[i++] = course.getName() + " (" + course.getEnrolledStudents().size() + "/" + course.getCapacity() + ")";
+        }
 
         SwingUtilities.invokeLater(() -> view.updateCourseInfo(lines));
-    }
-
-    public void updateView(String stringInfo) {
-        SwingUtilities.invokeLater(() -> view.updateEventLog(stringInfo));
-    }
-
-    public void updateStatusList(String[] itemsToAdd, boolean clearList) {
-        SwingUtilities.invokeLater(() -> view.updateStatusItemsList(itemsToAdd, clearList));
     }
 
     public void updateStatusList(String text) {
