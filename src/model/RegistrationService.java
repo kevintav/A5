@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 public class RegistrationService {
     private final Map<Integer, Course> courses = new ConcurrentHashMap<>();
     private final Map<Integer, Semaphore> locks = new ConcurrentHashMap<>();
-    private Consumer<String> logger = System.out::println;
+    private Consumer<String> logger;
 
     public void setLogger(Consumer<String> logger) {
         this.logger = logger;
